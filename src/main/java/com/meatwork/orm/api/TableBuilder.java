@@ -2,6 +2,7 @@ package com.meatwork.orm.api;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -29,22 +30,18 @@ public class TableBuilder {
 	}
 
 	public TableBuilder primaryKey(String... keys) {
-		for (String key : keys) {
-			primaryKeys.add(key);
-		}
+		this.primaryKeys.addAll(Arrays.asList(keys));
 		return this;
 	}
 
 	public TableBuilder foreignKey(String column,
 	                               String referencedTable,
-	                               String referencedColumn,
-	                               String onDelete) {
+	                               String referencedColumn) {
 		String fkDef = String.format(
-				"FOREIGN KEY (%s) REFERENCES %s(%s) ON DELETE %s",
+				"FOREIGN KEY (%s) REFERENCES %s(%s)",
 				column,
 				referencedTable,
-				referencedColumn,
-				onDelete
+				referencedColumn
 		);
 		foreignKeys.add(fkDef);
 		return this;

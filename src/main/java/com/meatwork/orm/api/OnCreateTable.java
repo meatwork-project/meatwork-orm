@@ -11,5 +11,5 @@ import java.util.Set;
  */
 @IService
 public interface OnCreateTable {
-	String onCreate(Set<Entity> entitySet);
+	String onCreate(Set<Entity> entitySet) throws OrmQueryException;
 }

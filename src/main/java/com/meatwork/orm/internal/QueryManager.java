@@ -3,6 +3,7 @@ package com.meatwork.orm.internal;
 
 import com.meatwork.common.Preconditions;
 import com.meatwork.orm.api.EntityRef;
+import com.meatwork.orm.api.EntityRefProperty;
 import com.meatwork.orm.api.MetaProperty;
 import com.meatwork.orm.api.OrmQueryException;
 import com.meatwork.orm.api.SqlQueryBuilder;
@@ -13,17 +14,14 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 /*
  * Copyright (c) 2025 Taliro.
@@ -88,6 +86,8 @@ public final class QueryManager {
 		try (Connection conn = connectionManager.getConnection()) {
 			var statement = conn.createStatement();
 			return statement.executeUpdate(query) > 0;
+		} catch (Exception e) {
+			throw new SQLException(e);
 		}
 	}
 
@@ -125,9 +125,9 @@ public final class QueryManager {
 		} else if (value
 				.getClass()
 				.equals(LocalTime.class)) {
-			preparedStatement.setTime(
+			preparedStatement.setObject(
 					index,
-					Time.valueOf((LocalTime) value)
+					value
 			);
 		} else if (value
 				.getClass()
@@ -185,7 +185,6 @@ public final class QueryManager {
 		} else {
 			throw new SQLException("Object " + value.getClass() + " not supported");
 		}
-		;
 	}
 
 
@@ -203,8 +202,6 @@ public final class QueryManager {
 					metaProperty.fieldName(),
 					resultSet
 							.getDate(metaProperty.fieldName())
-							.toInstant()
-							.atZone(ZoneId.systemDefault())
 							.toLocalDate(),
 					metaProperty
 							.type()
@@ -260,13 +257,29 @@ public final class QueryManager {
 							.type()
 							.getType()
 			);
-			case ENTITY_REF -> new Change(
+			case ENTITY_REF -> {
+				EntityRefProperty entityRefProperty = Arrays
+						.stream(metaProperty.extraMetraProperties())
+						.filter(it -> it
+								.getClass()
+								.equals(EntityRefProperty.class))
+						.findFirst()
+						.map(EntityRefProperty.class::cast)
+						.orElseThrow(() -> new OrmQueryException("Cannot find EntityRefProperty"));
+				Object value = switch (entityRefProperty.typeId()) {
+					case INTEGER -> resultSet.getInt(metaProperty.fieldName());
+					case STRING -> resultSet.getString(metaProperty.fieldName());
+					case LONG -> resultSet.getLong(metaProperty.fieldName());
+					default -> throw new OrmQueryException("EntityRef not supported for type " + metaProperty.type());
+				};
+				yield new Change(
 					metaProperty.fieldName(),
-					new EntityRef<>(null, resultSet.getInt(metaProperty.fieldName())),
+					new EntityRef<>(null, value),
 					metaProperty
 							.type()
 							.getType()
 			);
+			}
 		};
 	}
 

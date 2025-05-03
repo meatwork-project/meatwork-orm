@@ -2,7 +2,9 @@ package com.meatwork.orm.test.model;
 
 
 import com.meatwork.orm.api.AbstractMeatEntity;
+import com.meatwork.orm.api.DecimalProperty;
 import com.meatwork.orm.api.EntityRef;
+import com.meatwork.orm.api.EntityRefProperty;
 import com.meatwork.orm.api.MetaProperty;
 import com.meatwork.orm.api.PropertyType;
 
@@ -25,11 +27,11 @@ public class AnEntity extends AbstractMeatEntity {
 				new MetaProperty("TOTO", PropertyType.STRING, false, false, true),
 				new MetaProperty("AGE", PropertyType.INTEGER, false, false, true),
 				new MetaProperty("NUMBER_ID", PropertyType.LONG, false, false, true),
-				new MetaProperty("REF", PropertyType.ENTITY_REF, false, false, true),
+				new MetaProperty("REF", PropertyType.ENTITY_REF, false, false, true, new EntityRefProperty(PropertyType.STRING, "AnEntity2", "ID")),
 				new MetaProperty("DATE", PropertyType.LOCALDATE, false, false, true),
 				new MetaProperty("TIME", PropertyType.LOCALTIME, false, false, true),
 				new MetaProperty("DATETIME", PropertyType.LOCALDATETIME, false, false, true),
-				new MetaProperty("BIGDECIMAL", PropertyType.BIGDECIMAL, false, false, true),
+				new MetaProperty("BIGDECIMAL", PropertyType.BIGDECIMAL, false, false, true, new DecimalProperty(10, 2)),
 		};
 	}
 

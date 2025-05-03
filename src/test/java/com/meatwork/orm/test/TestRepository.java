@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -52,9 +53,12 @@ public class TestRepository {
 		anEntity.setToto("An Toto");
 		anEntity.setAge(10);
 		anEntity.setBigdecimal(new BigDecimal(10));
-		anEntity.setDate(LocalDate.now());
-		anEntity.setTime(LocalTime.now());
-		anEntity.setDatetime(LocalDateTime.now());
+		LocalDate nowDate = LocalDate.now();
+		anEntity.setDate(nowDate);
+		LocalTime nowTime = LocalTime.now();
+		anEntity.setTime(nowTime);
+		LocalDateTime nowDateTime = LocalDateTime.now();
+		anEntity.setDatetime(nowDateTime);
 		anEntity.setNumberId(99999999999L);
 		anEntity.setRef(new EntityRef<>(anEntity2, anEntity2.getId()));
 
@@ -65,10 +69,12 @@ public class TestRepository {
 		Assertions.assertEquals("An Name", anEntityFromDb.getName());
 		Assertions.assertEquals("An Toto", anEntityFromDb.getToto());
 		Assertions.assertEquals(10, anEntityFromDb.getAge());
-		Assertions.assertEquals(new BigDecimal(10), anEntityFromDb.getBigdecimal());
-		Assertions.assertEquals(LocalDate.now(), anEntityFromDb.getDate());
-		Assertions.assertEquals(LocalTime.now(), anEntityFromDb.getTime());
-		Assertions.assertEquals(LocalDateTime.now(), anEntityFromDb.getDatetime());
+		Assertions.assertEquals(new BigDecimal(10).setScale(2, RoundingMode.DOWN), anEntityFromDb.getBigdecimal());
+		Assertions.assertEquals(nowDate, anEntityFromDb.getDate());
+		Assertions.assertEquals(nowTime.getHour(), anEntityFromDb.getTime().getHour());
+		Assertions.assertEquals(nowTime.getMinute(), anEntityFromDb.getTime().getMinute());
+		Assertions.assertEquals(nowTime.getSecond(), anEntityFromDb.getTime().getSecond());
+		Assertions.assertEquals(nowDateTime, anEntityFromDb.getDatetime());
 		Assertions.assertEquals(99999999999L, anEntityFromDb.getNumberId());
 		Assertions.assertEquals(anEntity2.getId(), anEntityFromDb.getRef().id());
 
