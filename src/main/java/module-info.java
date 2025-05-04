@@ -1,5 +1,3 @@
-import com.meatwork.core.api.service.ApplicationStartup;
-
 /*
  * Copyright (c) 2016 Taliro.
  * All rights reserved.
@@ -7,11 +5,9 @@ import com.meatwork.core.api.service.ApplicationStartup;
 module com.meatwork.orm {
 
 	requires com.meatwork.core;
-	requires org.slf4j;
-	requires org.reflections;
-	requires java.sql;
-	requires jakarta.inject;
 	requires meatwork.common;
+	requires org.reflections;
+	requires transitive java.sql;
 
 	exports com.meatwork.orm.api;
 	exports com.meatwork.orm.internal to com.meatwork.core, com.meatwork.orm.test;

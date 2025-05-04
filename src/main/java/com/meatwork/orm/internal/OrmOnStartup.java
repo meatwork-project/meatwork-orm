@@ -4,7 +4,7 @@ package com.meatwork.orm.internal;
 import com.meatwork.core.api.di.Service;
 import com.meatwork.core.api.service.ApplicationStartup;
 import com.meatwork.orm.api.OnCreateTable;
-import com.meatwork.orm.api.OrmConfiguration;
+import com.meatwork.orm.api.OrmQueryException;
 import jakarta.inject.Inject;
 
 import java.sql.SQLException;
@@ -32,7 +32,7 @@ public class OrmOnStartup implements ApplicationStartup {
 	}
 
 	@Override
-	public void run(String[] args) throws SQLException {
+	public void run(String[] args) throws SQLException, OrmQueryException {
 		EntityManager.init();
 		queryManager.executeUpdate(onCreateTable.onCreate(EntityManager.getAll()));
 	}
