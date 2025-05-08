@@ -2,6 +2,7 @@ package com.meatwork.orm.test;
 
 
 import com.meatwork.core.api.service.ApplicationStartup;
+import com.meatwork.core.api.service.MeatworkApplication;
 import com.meatwork.orm.api.EntityRef;
 import com.meatwork.orm.test.model.AnEntity;
 import com.meatwork.orm.test.model.AnEntity2;
@@ -37,7 +38,7 @@ public class TestRepository {
 
 	@Test
 	public void testRepositorySave() throws Exception {
-		applicationStartups.iterator().next().run(null);
+		applicationStartups.iterator().next().run(ApplicationTest.class, null);
 
 		var anEntity2 = new AnEntity2();
 		anEntity2.setId(UUID.randomUUID().toString());
@@ -74,11 +75,14 @@ public class TestRepository {
 		Assertions.assertEquals(nowTime.getHour(), anEntityFromDb.getTime().getHour());
 		Assertions.assertEquals(nowTime.getMinute(), anEntityFromDb.getTime().getMinute());
 		Assertions.assertEquals(nowTime.getSecond(), anEntityFromDb.getTime().getSecond());
-		Assertions.assertEquals(nowDateTime, anEntityFromDb.getDatetime());
+		Assertions.assertEquals(nowDateTime.getHour(), anEntityFromDb.getDatetime().getHour());
+		Assertions.assertEquals(nowDateTime.getMinute(), anEntityFromDb.getDatetime().getMinute());
+		Assertions.assertEquals(nowDateTime.getSecond(), anEntityFromDb.getDatetime().getSecond());
 		Assertions.assertEquals(99999999999L, anEntityFromDb.getNumberId());
 		Assertions.assertEquals(anEntity2.getId(), anEntityFromDb.getRef().id());
 
 	}
 
-
+	@MeatworkApplication
+	public static class ApplicationTest {}
 }

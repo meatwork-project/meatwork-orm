@@ -1,13 +1,15 @@
 package com.meatwork.orm.internal;
 
 
+import com.meatwork.core.api.service.MeatworkApplication;
 import com.meatwork.orm.api.Entity;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Modifier;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Set;
 
 /*
@@ -18,15 +20,15 @@ public final class EntityManager {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EntityManager.class);
 
-	public static void init() {
-		List<String> list = ModuleLayer
-				.boot()
-				.modules()
-				.stream()
-				.flatMap(it -> it
-						.getPackages()
-						.stream())
-				.toList();
+	public static void init(Class<?> applicationCls) {
+
+		var annotation = applicationCls.getAnnotation(MeatworkApplication.class);
+		if (annotation == null) {
+			LOGGER.error("Class {} is not a MeatworkApplication", applicationCls);
+			return;
+		}
+		var list = new ArrayList<>(Arrays.asList(annotation.packages()));
+		list.add("com.meatwork");
 		Reflections reflections = new Reflections(list);
 		Set<Class<? extends Entity>> subTypesOf = reflections.getSubTypesOf(Entity.class);
 		LOGGER.debug("Entity {} found", subTypesOf);

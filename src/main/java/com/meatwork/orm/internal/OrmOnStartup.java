@@ -32,8 +32,8 @@ public class OrmOnStartup implements ApplicationStartup {
 	}
 
 	@Override
-	public void run(String[] args) throws SQLException, OrmQueryException {
-		EntityManager.init();
+	public void run(Class<?> applicationCls, String[] args) throws SQLException, OrmQueryException {
+		EntityManager.init(applicationCls);
 		queryManager.executeUpdate(onCreateTable.onCreate(EntityManager.getAll()));
 	}
 }
